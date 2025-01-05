@@ -43,8 +43,6 @@ class _QuizScreenState extends State<QuizScreen> {
       setState(() {
         _questions = json.decode(response.body);
       });
-    } else {
-      print('Failed to load questions');
     }
   }
 
@@ -53,6 +51,8 @@ class _QuizScreenState extends State<QuizScreen> {
       setState(() {
         _score++;
       });
+    } else {
+      _showExplanationDialog(_questions[_currentIndex]['explanation']);
     }
 
     setState(() {
@@ -65,6 +65,29 @@ class _QuizScreenState extends State<QuizScreen> {
       _currentIndex = 0;
       _score = 0;
     });
+  }
+
+  void _showExplanationDialog(String explanation) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Explanation'),
+          content: Text(explanation),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                setState(() {
+                  _currentIndex++;
+                });
+              },
+              child: Text('Continue'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -85,11 +108,7 @@ class _QuizScreenState extends State<QuizScreen> {
             children: [
               Text(
                 'Your Score: $_score/${_questions.length}',
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.blueAccent,
-                ),
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 20),
               ElevatedButton(
@@ -97,6 +116,10 @@ class _QuizScreenState extends State<QuizScreen> {
                 style: ElevatedButton.styleFrom(
                   padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
                   textStyle: TextStyle(fontSize: 18),
+                  backgroundColor: Colors.blueAccent,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
                 child: Text('Restart Quiz'),
               ),
@@ -130,33 +153,31 @@ class _QuizScreenState extends State<QuizScreen> {
           children: [
             Card(
               elevation: 5,
-              margin: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+              margin: EdgeInsets.symmetric(vertical: 20),
+              color: Colors.white,
               child: Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: Text(
                   question['question_text'],
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
                 ),
               ),
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 30),
             Expanded(
               child: Column(
                 children: [
                   ElevatedButton(
                     onPressed: () => checkAnswer('Phishing'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.redAccent,
-                      foregroundColor: Colors.white,
                       padding:
                           EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                      backgroundColor: Colors.blueAccent,
+                      foregroundColor: Colors.white,
                       textStyle: TextStyle(fontSize: 18),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(12),
                       ),
                     ),
                     child: Text('Phishing'),
@@ -165,13 +186,13 @@ class _QuizScreenState extends State<QuizScreen> {
                   ElevatedButton(
                     onPressed: () => checkAnswer('Legitimate'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
-                      foregroundColor: Colors.white,
                       padding:
                           EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                      backgroundColor: Colors.green,
+                      foregroundColor: Colors.white,
                       textStyle: TextStyle(fontSize: 18),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(12),
                       ),
                     ),
                     child: Text('Legitimate'),
